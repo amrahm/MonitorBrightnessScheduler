@@ -22,8 +22,11 @@
         },
         {
             "TIME": "23:00",
-            "VALUE": 60
+            "VALUE": 70
         }
     ],
-    "UPDATE_FREQ": 60
+    "UPDATE_FREQ": 10,
+    "SHOULD_HOLD": true,
+    "HOLD_TIME": 1,
+    "HOLD_START_TIME": "2022-10-30T23:33:23.667384"
 }

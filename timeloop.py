@@ -1,5 +1,5 @@
 import time, threading
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import monitorcontrol
 from infrastructure import *
 
@@ -16,36 +16,43 @@ class TimeVal:
 class TimeLoop(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self, daemon=True)
-        self.settingsUpdatedEvent = threading.Event()
-        self.settings = load_settings()
-        self.time_vals = [TimeVal(row["TIME"], row["VALUE"]) for row in self.settings["TIMES"]]
-
-    def handle_settings_updated_event(self):
-        if self.settingsUpdatedEvent.is_set():
-            self.settings = load_settings()
-            self.time_vals = [TimeVal(row["TIME"], row["VALUE"]) for row in self.settings["TIMES"]]
-            self.settingsUpdatedEvent.clear()
+        self.update_freq = 0  # immediate update on program open
 
     def run(self):
         while True:
-            self.handle_settings_updated_event()
-            while not self.time_vals:
-                self.settingsUpdatedEvent.wait()
-                self.handle_settings_updated_event()
-            curr_time = datetime.now()
-            prev_time_val = self.time_vals[-1]
-            for next_time_val in self.time_vals:
-                if next_time_val.time > curr_time.time():
-                    break
-                prev_time_val = next_time_val
+            time.sleep(self.update_freq)
+            with SettingsSingleton().settings() as settings:
+                self.update_freq = settings[UPDATE_FREQ]
+                if not settings[TIMES]:
+                    continue
 
-            next_time = datetime.combine(date.today(), next_time_val.time)
-            prev_time = datetime.combine(date.today(), prev_time_val.time)
-            ratio = (curr_time - prev_time) / (next_time - prev_time)
-            new_brightness = int(next_time_val.value * ratio + prev_time_val.value * (1 - ratio))
+                curr_time = datetime.now()
 
-            for monitor in monitorcontrol.get_monitors():
-                with monitor:
-                    monitor.set_luminance(new_brightness)
+                if settings[SHOULD_HOLD]:
+                    hold_start = datetime.fromisoformat(settings[HOLD_START_TIME])
+                    held = (curr_time - hold_start).seconds // 60
+                    if held < settings[HOLD_TIME]:
+                        continue
+                    settings[SHOULD_HOLD] = False
+                    SettingsSingleton().update_single_setting_with_lock(SHOULD_HOLD, False)
 
-            time.sleep(self.settings["UPDATE_FREQ"])
+                self.time_vals = [TimeVal(row[TIME], row[VALUE]) for row in settings[TIMES]]
+                prev_time_val = self.time_vals[-1]
+                for next_time_val in self.time_vals:
+                    if next_time_val.time > curr_time.time():
+                        break
+                    prev_time_val = next_time_val
+
+                next_time = datetime.combine(date.today(), next_time_val.time)
+                prev_time = datetime.combine(date.today(), prev_time_val.time)
+
+                if next_time_val == prev_time_val:
+                    next_time_val = self.time_vals[0]
+                    next_time = datetime.combine(date.today() + timedelta(days=1), next_time_val.time)
+
+                ratio = 1 if next_time == prev_time else (curr_time - prev_time) / (next_time - prev_time)
+                new_brightness = int(next_time_val.value * ratio + prev_time_val.value * (1 - ratio))
+
+                for monitor in monitorcontrol.get_monitors():
+                    with monitor:
+                        monitor.set_luminance(new_brightness)

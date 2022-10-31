@@ -26,20 +26,16 @@ def main():
         if event == tray.key:
             event = values[event]
 
-        match event:
-            case "Exit Program" | sg.WIN_CLOSED:
-                break
-            case "Open Settings" | sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED:
-                settings_view.get_settings_window()
-            case sg.EVENT_SYSTEM_TRAY_ICON_ACTIVATED:
-                show_slider_window(slider_window)
-            case _:
-                if window == slider_window:
-                    handle_slider_window_events(window, event, values)
-                elif window == settings_view.window:
-                    settings_changed = settings_view.handle_settings_window_events(window, event, values)
-                    if settings_changed:
-                        time_loop.settingsUpdatedEvent.set()
+        if event in (EXIT_PROGRAM, sg.WIN_CLOSED):
+            break
+        elif event in (OPEN_SETTINGS, sg.EVENT_SYSTEM_TRAY_ICON_DOUBLE_CLICKED):
+            settings_view.get_settings_window()
+        elif event == sg.EVENT_SYSTEM_TRAY_ICON_ACTIVATED:
+            show_slider_window(slider_window)
+        elif window == slider_window:
+            handle_slider_window_events(window, event, values)
+        elif window == settings_view.window:
+            settings_view.handle_settings_window_events(window, event, values)
 
     tray.close()
     slider_window.close()
@@ -47,7 +43,7 @@ def main():
 
 def get_tray(settings_window):
     tooltip = "Click to open Brightness Slider, double click to open settings"
-    menu = ["", ["Open Settings", "Exit Program"]]
+    menu = ["", [OPEN_SETTINGS, EXIT_PROGRAM]]
     return SystemTray(
         menu,
         single_click_events=True,
