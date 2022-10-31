@@ -2,9 +2,10 @@ import os
 import PySimpleGUI as sg
 from psgtray import SystemTray
 from infrastructure import *
-from settingsview import *
-from sliderwindow import *
-from timeloop import *
+from settingsview import SettingsView
+from sliderwindow import get_slider_window, show_slider_window, handle_slider_window_events
+from timeloop import TimeLoop
+from lockscreenlistener import listen_for_unlock
 
 
 def main():
@@ -18,6 +19,8 @@ def main():
 
     time_loop = TimeLoop()
     time_loop.start()
+
+    listen_for_unlock()
 
     while True:
         window, event, values = sg.read_all_windows()
