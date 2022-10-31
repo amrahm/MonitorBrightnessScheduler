@@ -1,10 +1,11 @@
 import sys
-import threading
+import time, threading
 import json
 import win32api
 import PySimpleGUI as sg
 from os.path import exists
 from typing import Dict, List
+import monitorcontrol
 from datetime import datetime
 import contextlib
 
@@ -91,44 +92,6 @@ def _sort_times(settings):
     settings[TIMES].sort(key=lambda x: datetime.strptime(x[TIME], "%H:%M").time())
 
 
-# def load_settings() -> Settings:
-#     if exists(SETTINGS_PATH):
-#         with open(SETTINGS_PATH, "r") as jsonfile:
-#             settings = json.load(jsonfile)
-#     else:
-#         settings: Settings = {TIMES: [], UPDATE_FREQ: 10, SHOULD_HOLD: False, HOLD_TIME: 60}
-#         save_settings(settings)
-#     return settings
-
-
-# def save_settings(settings: Settings):
-#     seen = set()
-#     to_del = []
-#     for i, time in enumerate(settings[TIMES]):
-#         time = time[TIME]
-#         hrs, mins = time.split(":") if time else ("", "")
-#         if not hrs and not mins:
-#             to_del.append(i)
-#             continue
-#         elif not hrs:
-#             settings[TIMES][i][TIME] = time = f"00:{mins}"
-#         elif not mins:
-#             settings[TIMES][i][TIME] = time = f"{hrs}:00"
-
-#         if time in seen:
-#             to_del.append(i)
-#         seen.add(time)
-
-#     for i in sorted(to_del, reverse=True):
-#         del settings[TIMES][i]
-
-#     sort_times(settings)
-#     with open(SETTINGS_PATH, "w") as jsonfile:
-#         json.dump(settings, jsonfile, indent=4)
-
-#     SettingsSingleton()._settings.update(settings)
-
-
 def position_window_on_tray(window: sg.Window, keep_x=False):
     window.hide()
     mouse_pos = win32api.GetCursorPos()
@@ -147,7 +110,21 @@ def position_window_on_tray(window: sg.Window, keep_x=False):
     window.TKroot.focus_force()
 
 
-# def update_single_setting(value, setting):
-#     settings = _load_settings()
-#     settings[setting] = value
-#     save_settings(settings)
+def set_monitor_brightness(new_brightness):
+    for _ in range(3):
+        try:
+            for monitor in monitorcontrol.get_monitors():
+                with monitor:
+                    old = monitor.get_luminance()
+                    if old == new_brightness:
+                        continue
+                    monitor.set_luminance(new_brightness)
+            break
+        except (ValueError, monitorcontrol.VCPError) as e:
+            print(e)
+            time.sleep(0.2)
+
+
+def get_monitor_brightness():
+    with monitorcontrol.get_monitors()[0] as monitor:
+        return monitor.get_luminance()

@@ -1,4 +1,3 @@
-import monitorcontrol
 import PySimpleGUI as sg
 from infrastructure import *
 
@@ -46,19 +45,15 @@ def show_slider_window(window: sg.Window):
 
 
 def _init_slider_value(window: sg.Window):
-    with monitorcontrol.get_monitors()[0] as monitor:
-        slider = window[BRIGHTNESS_SLIDER]
-        slider.Update(value=monitor.get_luminance())
+    slider = window[BRIGHTNESS_SLIDER]
+    slider.Update(value=get_monitor_brightness())
 
 
 def handle_slider_window_events(window: sg.Window, event, values):
     if event == FOCUS_OUT:
         window.hide()
     elif event == f"{BRIGHTNESS_SLIDER}_RELEASE":
-        val = int(values[BRIGHTNESS_SLIDER])
-        for monitor in monitorcontrol.get_monitors():
-            with monitor:
-                monitor.set_luminance(val)
+        set_monitor_brightness(int(values[BRIGHTNESS_SLIDER]))
 
         window[CHECKBOX_HOLD].update(value=True)
         SettingsSingleton().update_single_setting(HOLD_START_TIME, datetime.now().isoformat())

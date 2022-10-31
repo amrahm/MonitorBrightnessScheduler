@@ -1,6 +1,5 @@
 import time, threading
 from datetime import datetime, date, timedelta
-import monitorcontrol
 from infrastructure import *
 
 
@@ -53,6 +52,6 @@ class TimeLoop(threading.Thread):
                 ratio = 1 if next_time == prev_time else (curr_time - prev_time) / (next_time - prev_time)
                 new_brightness = int(next_time_val.value * ratio + prev_time_val.value * (1 - ratio))
 
-                for monitor in monitorcontrol.get_monitors():
-                    with monitor:
-                        monitor.set_luminance(new_brightness)
+                # print(prev_time_val, curr_time.time(), next_time_val, f"{ratio:0.5}", new_brightness)
+
+                set_monitor_brightness(new_brightness)
