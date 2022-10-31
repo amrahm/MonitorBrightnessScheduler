@@ -1,3 +1,4 @@
+import sys
 import json
 import win32api
 import PySimpleGUI as sg
@@ -7,6 +8,7 @@ from datetime import datetime
 
 Settings = Dict[str, List | int]
 SETTINGS_PATH = "settings.json"
+WORKING_DIR = sys._MEIPASS if getattr(sys, "frozen", False) else ""
 
 
 def load_settings() -> Settings:
@@ -15,7 +17,7 @@ def load_settings() -> Settings:
             settings = json.load(jsonfile)
     else:
         settings: Settings = {"TIMES": [], "UPDATE_FREQ": 10}
-        save_settings()
+        save_settings(settings)
     return settings
 
 

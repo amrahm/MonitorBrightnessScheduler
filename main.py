@@ -1,3 +1,4 @@
+import os
 import PySimpleGUI as sg
 from psgtray import SystemTray
 from infrastructure import *
@@ -47,7 +48,13 @@ def main():
 def get_tray(settings_window):
     tooltip = "Click to open Brightness Slider, double click to open settings"
     menu = ["", ["Open Settings", "Exit Program"]]
-    return SystemTray(menu, single_click_events=True, window=settings_window, tooltip=tooltip, icon="favicon.ico")
+    return SystemTray(
+        menu,
+        single_click_events=True,
+        window=settings_window,
+        tooltip=tooltip,
+        icon=os.path.join(WORKING_DIR, "favicon.ico"),
+    )
 
 
 if __name__ == "__main__":

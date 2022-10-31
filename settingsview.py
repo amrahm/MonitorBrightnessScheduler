@@ -1,4 +1,4 @@
-from operator import le
+import os
 import PySimpleGUI as sg
 from infrastructure import *
 
@@ -42,7 +42,7 @@ class SettingsView:
                 default_value=value,
                 enable_events=True,
             ),
-            sg.Button(image_filename="delete.png", key=f"TIME_ROW_DELETE_{i}"),
+            sg.Button(image_filename=os.path.join(WORKING_DIR, "delete.png"), key=f"TIME_ROW_DELETE_{i}"),
         ]
 
     def get_settings_window(self):
