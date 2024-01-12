@@ -1,25 +1,22 @@
-name: Package Application with Pyinstaller
-
 on:
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ['windows-latest', 'ubuntu-latest, 'macos-latest']
 
     steps:
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.11
 
-      - name: Package Application
-        uses: JackMcKew/pyinstaller-action-windows@python3-10-pyinstaller-5-3
-        with:
-          path: src
-          spec: MonitorBrightnessScheduler.spec
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: MonitorBrightnessScheduler
-          path: dist/windows
+    - run: pip install pyinstaller
+    - run: pyinstaller --clean --noconfirm --log-level=WARN src/MonitorBrightnessScheduler.spec
+    - uses: actions/upload-artifact@v2
+      with:
+        path: dist/*

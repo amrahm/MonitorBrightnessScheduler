@@ -1,1 +1,1 @@
-pyinstaller --add-data "*.png;." --add-data "*.ico;." --clean --noconfirm --log-level=WARN --icon=favicon.ico --onefile --noconsole --name=MonitorBrightnessScheduler main.py
+pyinstaller --clean --noconfirm --log-level=WARN src/MonitorBrightnessScheduler.spec
