@@ -16,7 +16,7 @@ jobs:
         with:
           python-version: 3.11
 
-      - run: pip install pyinstaller
+      - run: pip install -r requirements.txt  pyinstaller
       - run: pyinstaller --clean --noconfirm --log-level=WARN src/MonitorBrightnessScheduler.spec
       - uses: actions/upload-artifact@v2
         with:

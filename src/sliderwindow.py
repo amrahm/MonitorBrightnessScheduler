@@ -1,5 +1,15 @@
+from datetime import datetime
 import PySimpleGUI as sg
-from infrastructure import *
+
+from src.infrastructure import (
+    HOLD_START_TIME,
+    HOLD_TIME,
+    SHOULD_HOLD,
+    SettingsSingleton,
+    get_monitor_brightness,
+    position_window_on_tray,
+    set_monitor_brightness,
+)
 
 BRIGHTNESS_SLIDER = "BRIGHTNESS_SLIDER"
 CHECKBOX_HOLD = "CHECKBOX_HOLD"
@@ -15,9 +25,18 @@ def get_slider_window():
                 sg.Text("Set Monitor Brightness:"),
                 sg.Push(),
             ],
-            [sg.Slider(range=(0, 100), resolution=1, orientation="h", key=BRIGHTNESS_SLIDER)],
             [
-                sg.Checkbox(text="Hold?", enable_events=True, key=CHECKBOX_HOLD, default=settings[SHOULD_HOLD]),
+                sg.Slider(
+                    range=(0, 100), resolution=1, orientation="h", key=BRIGHTNESS_SLIDER
+                )
+            ],
+            [
+                sg.Checkbox(
+                    text="Hold?",
+                    enable_events=True,
+                    key=CHECKBOX_HOLD,
+                    default=settings[SHOULD_HOLD],
+                ),
                 sg.Text("for"),
                 sg.Input(
                     key=INPUT_HOLD,
@@ -56,10 +75,14 @@ def handle_slider_window_events(window: sg.Window, event, values):
         set_monitor_brightness(int(values[BRIGHTNESS_SLIDER]))
 
         window[CHECKBOX_HOLD].update(value=True)
-        SettingsSingleton().update_single_setting(HOLD_START_TIME, datetime.now().isoformat())
+        SettingsSingleton().update_single_setting(
+            HOLD_START_TIME, datetime.now().isoformat()
+        )
         SettingsSingleton().update_single_setting(SHOULD_HOLD, True)
     elif event == CHECKBOX_HOLD:
-        SettingsSingleton().update_single_setting(HOLD_START_TIME, datetime.now().isoformat())
+        SettingsSingleton().update_single_setting(
+            HOLD_START_TIME, datetime.now().isoformat()
+        )
         SettingsSingleton().update_single_setting(SHOULD_HOLD, values[event])
     elif event == INPUT_HOLD:
         if not values[event]:

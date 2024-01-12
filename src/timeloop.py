@@ -1,5 +1,11 @@
 import time, threading
-from infrastructure import *
+
+from src.infrastructure import (
+    TIMES,
+    UPDATE_FREQ,
+    SettingsSingleton,
+    update_brightness_based_on_time,
+)
 
 
 class TimeLoop(threading.Thread):

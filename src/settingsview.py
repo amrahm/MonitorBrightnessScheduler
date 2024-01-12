@@ -1,7 +1,17 @@
 import copy
 import os
 import PySimpleGUI as sg
-from infrastructure import *
+
+from src.infrastructure import (
+    EXIT_PROGRAM,
+    TIME,
+    TIMES,
+    UPDATE_FREQ,
+    VALUE,
+    WORKING_DIR,
+    SettingsSingleton,
+    position_window_on_tray,
+)
 
 CANCEL = "Cancel"
 OK = "Ok"
@@ -26,7 +36,9 @@ class SettingsView:
         time, value = row[TIME], row[VALUE]
         hrs, mins = time.split(":") if time else ("", "")
         i = self.row_inc
-        self.row_map[i] = row_ind if row_ind is not None else len(self.new_settings[TIMES]) - 1
+        self.row_map[i] = (
+            row_ind if row_ind is not None else len(self.new_settings[TIMES]) - 1
+        )
         self.row_inc += 1
         return [
             sg.Input(
@@ -52,7 +64,10 @@ class SettingsView:
                 default_value=value,
                 enable_events=True,
             ),
-            sg.Button(image_filename=os.path.join(WORKING_DIR, "delete.png"), key=f"{TIME_ROW_DELETE}{i}"),
+            sg.Button(
+                image_filename=os.path.join(WORKING_DIR, "delete.png"),
+                key=f"{TIME_ROW_DELETE}{i}",
+            ),
         ]
 
     def get_settings_window(self):
@@ -62,7 +77,9 @@ class SettingsView:
 
         with SettingsSingleton().settings() as settings:
             self.new_settings = copy.deepcopy(settings)
-        time_rows = [self.get_time_row(row, i) for i, row in enumerate(self.new_settings[TIMES])]
+        time_rows = [
+            self.get_time_row(row, i) for i, row in enumerate(self.new_settings[TIMES])
+        ]
         layout = [
             [sg.Column(time_rows, key=TIME_COLUMN)],
             [sg.Push(), sg.B(ADD_TIME), sg.Push()],
