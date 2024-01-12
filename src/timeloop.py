@@ -1,6 +1,6 @@
 import time, threading
 
-from src.infrastructure import (
+from infrastructure import (
     TIMES,
     UPDATE_FREQ,
     SettingsSingleton,

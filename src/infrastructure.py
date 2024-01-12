@@ -13,7 +13,6 @@ import contextlib
 Settings = Dict[str, List | int]
 SETTINGS_PATH = "settings.json"
 WORKING_DIR = sys._MEIPASS if getattr(sys, "frozen", False) else "src"
-print(WORKING_DIR)
 
 EXIT_PROGRAM = "Exit Program"
 OPEN_SETTINGS = "Open Settings"

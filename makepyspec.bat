@@ -1,1 +1,1 @@
-pyi-makespec --add-data "*.png;." --add-data "*.ico;." --icon=favicon.ico --onefile --noconsole --name=MonitorBrightnessScheduler main.py
+pyi-makespec --add-data "src/*.png;." --add-data "src/*.ico;." --icon=src/favicon.ico --onefile --noconsole --name=MonitorBrightnessScheduler src/main.py

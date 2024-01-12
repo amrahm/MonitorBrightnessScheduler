@@ -1,7 +1,7 @@
 from datetime import datetime
 import PySimpleGUI as sg
 
-from src.infrastructure import (
+from infrastructure import (
     HOLD_START_TIME,
     HOLD_TIME,
     SHOULD_HOLD,

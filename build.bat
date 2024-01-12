@@ -1,1 +1,1 @@
-pyinstaller --clean --noconfirm --log-level=WARN src/MonitorBrightnessScheduler.spec
+pyinstaller --clean --noconfirm --log-level=WARN MonitorBrightnessScheduler.spec

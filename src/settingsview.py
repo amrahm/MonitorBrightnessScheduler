@@ -2,7 +2,7 @@ import copy
 import os
 import PySimpleGUI as sg
 
-from src.infrastructure import (
+from infrastructure import (
     EXIT_PROGRAM,
     TIME,
     TIMES,
