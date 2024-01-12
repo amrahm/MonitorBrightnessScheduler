@@ -1,11 +1,13 @@
 import threading
 from collections import defaultdict
 from enum import Enum
+from time import sleep
 import win32api
 import win32con
 import win32gui
 import win32ts
-from infrastructure import *
+
+from infrastructure import update_brightness_based_on_time
 
 
 def listen_for_unlock():
@@ -15,6 +17,8 @@ def listen_for_unlock():
 
 def _unlock_handler(event):
     if event in (SessionEvent.SESSION_UNLOCK, SessionEvent.SESSION_LOGON):
+        update_brightness_based_on_time()
+        sleep(5)  # wait to make sure the screen has woken up
         update_brightness_based_on_time()
 
 
@@ -71,15 +75,15 @@ class WorkstationMonitor:
             None,
         )
         win32gui.UpdateWindow(self.window_handle)
-
-        # scope = win32ts.NOTIFY_FOR_THIS_SESSION
         scope = win32ts.NOTIFY_FOR_ALL_SESSIONS
         win32ts.WTSRegisterSessionNotification(self.window_handle, scope)
 
-    def listen(self):
+    @staticmethod
+    def listen():
         win32gui.PumpMessages()
 
-    def stop(self):
+    @staticmethod
+    def stop():
         exit_code = 0
         win32gui.PostQuitMessage(exit_code)
 

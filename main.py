@@ -1,9 +1,13 @@
 import os
 import PySimpleGUI as sg
 from psgtray import SystemTray
-from infrastructure import *
+from infrastructure import EXIT_PROGRAM, OPEN_SETTINGS, WORKING_DIR
 from settingsview import SettingsView
-from sliderwindow import get_slider_window, show_slider_window, handle_slider_window_events
+from sliderwindow import (
+    get_slider_window,
+    show_slider_window,
+    handle_slider_window_events,
+)
 from timeloop import TimeLoop
 from lockscreenlistener import listen_for_unlock
 
