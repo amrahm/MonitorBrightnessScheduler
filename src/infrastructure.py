@@ -12,7 +12,8 @@ import contextlib
 
 Settings = Dict[str, List | int]
 SETTINGS_PATH = "settings.json"
-WORKING_DIR = sys._MEIPASS if getattr(sys, "frozen", False) else ""
+WORKING_DIR = sys._MEIPASS if getattr(sys, "frozen", False) else "src"
+print(WORKING_DIR)
 
 EXIT_PROGRAM = "Exit Program"
 OPEN_SETTINGS = "Open Settings"
@@ -42,7 +43,12 @@ class SettingsSingleton:
             with open(SETTINGS_PATH, "r") as jsonfile:
                 self._settings: Settings = json.load(jsonfile)
         else:
-            self._settings: Settings = {TIMES: [], UPDATE_FREQ: 10, SHOULD_HOLD: False, HOLD_TIME: 60}
+            self._settings: Settings = {
+                TIMES: [],
+                UPDATE_FREQ: 10,
+                SHOULD_HOLD: False,
+                HOLD_TIME: 60,
+            }
             with open(SETTINGS_PATH, "w") as jsonfile:
                 json.dump(self._settings, jsonfile, indent=4)
 
@@ -142,6 +148,8 @@ class TimeVal:
 
 def update_brightness_based_on_time():
     with SettingsSingleton().settings() as settings:
+        if not settings[TIMES]:
+            return
         curr_time = datetime.now()
 
         if settings[SHOULD_HOLD]:
@@ -164,10 +172,18 @@ def update_brightness_based_on_time():
 
         if next_time_val == prev_time_val:
             next_time_val = time_vals[0]
-            next_time = datetime.combine(date.today() + timedelta(days=1), next_time_val.time)
+            next_time = datetime.combine(
+                date.today() + timedelta(days=1), next_time_val.time
+            )
 
-        ratio = 1 if next_time == prev_time else (curr_time - prev_time) / (next_time - prev_time)
-        new_brightness = int(next_time_val.value * ratio + prev_time_val.value * (1 - ratio))
+        ratio = (
+            1
+            if next_time == prev_time
+            else (curr_time - prev_time) / (next_time - prev_time)
+        )
+        new_brightness = int(
+            next_time_val.value * ratio + prev_time_val.value * (1 - ratio)
+        )
 
         # print(prev_time_val, curr_time.time(), next_time_val, f"{ratio:0.5}", new_brightness)
 

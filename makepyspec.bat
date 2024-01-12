@@ -1,0 +1,1 @@
+pyi-makespec --add-data "*.png;." --add-data "*.ico;." --icon=favicon.ico --onefile --noconsole --name=MonitorBrightnessScheduler main.py
