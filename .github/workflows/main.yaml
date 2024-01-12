@@ -17,7 +17,7 @@ jobs:
         uses: JackMcKew/pyinstaller-action-windows@main
         with:
           path: src
-          spec: MonitorBrightnessScheduler.spec
+          spec: src/MonitorBrightnessScheduler.spec
 
       - uses: actions/upload-artifact@v2
         with:
