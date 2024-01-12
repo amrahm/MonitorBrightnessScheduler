@@ -17,7 +17,7 @@ jobs:
           python-version: 3.11
 
       - run: pip install -r requirements.txt  pyinstaller
-      - run: pyinstaller --clean --noconfirm --log-level=WARN MonitorBrightnessScheduler.spec
+      - run: pyinstaller --clean --noconfirm --log-level=WARN --add-data "src/*.png;." --add-data "src/*.ico;." --icon=src/favicon.ico --onefile --noconsole --name=MonitorBrightnessScheduler src/main.py
 
       - name: Get current date
         id: date
